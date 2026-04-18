@@ -1,7 +1,7 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '../../components/themed-view';
 import { useGlobalContext } from '../../context/AuthContext';
 import { signOut } from '../../firebase';
 import { router } from 'expo-router';

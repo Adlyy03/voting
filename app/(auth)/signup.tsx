@@ -1,9 +1,9 @@
 
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
-import FormField from '@/components/FormField';
+import { ThemedView } from '../../components/themed-view';
+import { ThemedText } from '../../components/themed-text';
+import FormField from '../../components/FormField';
 import { Link, router } from 'expo-router';
 import { useGlobalContext } from '../../context/AuthContext';
 import { signUp } from '../../firebase';

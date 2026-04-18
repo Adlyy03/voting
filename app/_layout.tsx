@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
-import GlobalProvider, { useGlobalContext } from '@/context/AuthContext';
+import GlobalProvider, { useGlobalContext } from '../context/AuthContext';
 
 // Mencegah splash screen dari auto-hiding sebelum semua aset selesai dimuat.
 SplashScreen.preventAutoHideAsync();
