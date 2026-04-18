@@ -1,16 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { db } from '../../firebase'; // Sesuaikan path jika perlu
+import { Button, StyleSheet } from 'react-native';
+import { db } from '../../firebase'; // Pastikan path ini benar
 import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/components/themed-text';
 
 export default function App() {
   const [poll, setPoll] = useState(null);
   const [voted, setVoted] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Mengecek status voting dari AsyncStorage saat komponen dimuat
     const checkVotedStatus = async () => {
       try {
         const value = await AsyncStorage.getItem('voted');
@@ -23,60 +26,65 @@ export default function App() {
     };
 
     checkVotedStatus();
+    console.log("Mencoba mengambil data polling dari Firestore...");
 
-    // Mengambil data polling dari Firestore secara realtime
     const pollDocRef = doc(db, 'polls', 'poll1');
-    const unsubscribe = onSnapshot(pollDocRef, (doc) => {
-      if (doc.exists()) {
-        setPoll({ id: doc.id, ...doc.data() });
-      } else {
-        console.log("Tidak ada dokumen polling!");
+    const unsubscribe = onSnapshot(pollDocRef, 
+      (doc) => {
+        if (doc.exists()) {
+          console.log("Data polling berhasil diambil:", doc.data());
+          setPoll({ id: doc.id, ...doc.data() });
+        } else {
+          console.log("Dokumen polling (polls/poll1) tidak ditemukan!");
+          setError("Data polling tidak ditemukan.");
+        }
+      },
+      (err) => {
+        console.error("Error saat mengambil data Firestore: ", err);
+        setError("Gagal mengambil data. Kemungkinan karena masalah perizinan (security rules).");
       }
-    });
+    );
 
-    // Unsubscribe dari snapshot listener saat komponen dibongkar
     return () => unsubscribe();
   }, []);
 
-  // Fungsi untuk menangani voting
   const handleVote = async (optionIndex) => {
-    if (voted || !poll) return; // Mencegah voting jika sudah vote atau data poll belum ada
+    if (voted || !poll) return;
 
-    // Membuat salinan dari array options untuk menghindari mutasi langsung
     const newOptions = [...poll.options];
     newOptions[optionIndex].votes += 1;
 
-    // Update data di Firestore
     const pollDocRef = doc(db, 'polls', 'poll1');
     try {
       await updateDoc(pollDocRef, { options: newOptions });
-
-      // Simpan status voting ke AsyncStorage
       await AsyncStorage.setItem('voted', 'true');
-      setVoted(true); // Disable tombol setelah vote
-
+      setVoted(true);
     } catch (error) {
       console.error("Gagal update data ke Firestore: ", error);
     }
   };
 
+  if (error) {
+    return <ThemedText style={styles.errorText}>{error}</ThemedText>;
+  }
+
   if (!poll) {
-    return <Text>Loading...</Text>;
+    return <ThemedText>Loading...</ThemedText>;
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{poll.title}</Text>
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title}>{poll.title}</ThemedText>
       {poll.options.map((option, index) => (
-        <View key={index} style={styles.optionContainer}>
+        <ThemedView key={index} style={styles.optionContainer}>
           <Button
             title={`${option.name} (${option.votes})`}
             onPress={() => handleVote(index)}
-            disabled={voted} // Disable tombol jika sudah vote
+            disabled={voted}
           />
-        </View>
+        </ThemedView>
       ))}
-    </View>
+    </ThemedView>
   );
 }
 
@@ -95,5 +103,11 @@ const styles = StyleSheet.create({
   optionContainer: {
     marginVertical: 10,
     width: '80%',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    padding: 20,
   },
 });
