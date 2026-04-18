@@ -1,35 +1,67 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { View, Text } from 'react-native'
+import React from 'react'
+import { Tabs, Redirect } from 'expo-router'
+import { MaterialIcons } from '@expo/vector-icons';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const TabsLayout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+    <>
+        <Tabs
+            screenOptions={{
+                tabBarShowLabel: false,
+                tabBarActiveTintColor: '#3498db',
+                tabBarInactiveTintColor: '#95a5a6',
+                tabBarStyle: {
+                    backgroundColor: '#ecf0f1',
+                    borderTopWidth: 1,
+                    borderTopColor: '#bdc3c7',
+                    height: 84,
+                }
+            }}
+        >
+            <Tabs.Screen 
+                name="home"
+                options={{
+                    title: 'Home',
+                    headerShown: false,
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                            <MaterialIcons name="home" size={24} color={color} />
+                            <Text style={{ color: color, fontSize: 12 }}>Home</Text>
+                        </View>
+                    )
+                }}
+            />
+            <Tabs.Screen 
+                name="create"
+                options={{
+                    title: 'Create',
+                    headerShown: false,
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                            <MaterialIcons name="add-circle" size={24} color={color} />
+                            <Text style={{ color: color, fontSize: 12 }}>Create</Text>
+                        </View>
+                    )
+                }}
+            />
+            <Tabs.Screen 
+                name="profile"
+                options={{
+                    title: 'Profile',
+                    headerShown: false,
+                    tabBarIcon: ({ color, focused }) => (
+                        <View style={{ alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+                            <MaterialIcons name="person" size={24} color={color} />
+                            <Text style={{ color: color, fontSize: 12 }}>Profile</Text>
+                        </View>
+                    )
+                }}
+            />
+        </Tabs>
+    </>
+  )
 }
+
+export default TabsLayout

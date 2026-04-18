@@ -1,12 +1,14 @@
 
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged,
+    signOut as firebaseSignOut
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCkHakQ0u9jr3pxBxhbxAwY8lEy8RyGInI",
   authDomain: "voting-d4750.firebaseapp.com",
@@ -17,9 +19,33 @@ const firebaseConfig = {
   measurementId: "G-LB5WDKPYXT"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// Initialize Firestore
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-export { db };
+// Fungsi untuk mendaftarkan pengguna baru
+export const signUp = (email, password) => {
+  return createUserWithEmailAndPassword(auth, email, password);
+}
+
+// Fungsi untuk login pengguna
+export const signIn = (email, password) => {
+  return signInWithEmailAndPassword(auth, email, password);
+}
+
+// Fungsi untuk mendapatkan status pengguna saat ini
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      unsubscribe();
+      resolve(user);
+    }, reject);
+  });
+}
+
+// Fungsi untuk logout pengguna
+export const signOut = () => {
+    return firebaseSignOut(auth);
+}
+
+export { db, auth };
